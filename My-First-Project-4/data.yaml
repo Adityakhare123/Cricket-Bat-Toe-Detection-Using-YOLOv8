@@ -1,0 +1,15 @@
+names:
+- '0'
+- '1'
+- bat
+- toe
+nc: 4
+roboflow:
+  license: Private
+  project: my-first-project-1uxd5
+  url: https://app.roboflow.com/g1-ziqqv/my-first-project-1uxd5/4
+  version: 4
+  workspace: g1-ziqqv
+test: ../test/images
+train: ../train/images
+val: ../valid/images
