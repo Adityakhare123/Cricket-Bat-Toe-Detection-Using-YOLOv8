@@ -1,4 +1,4 @@
-# 🏏 Cricket Bat Toe Detection Using YOLOv8
+#  Cricket Bat Toe Detection Using YOLOv8
 
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=0:020617,50:22c55e,100:3b82f6&height=220&section=header&text=Cricket%20Bat%20Toe%20Detection&fontSize=42&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=YOLOv8%20%7C%20OpenCV%20%7C%20Streamlit%20%7C%20Computer%20Vision&descAlignY=60&descAlign=50&descSize=18" />
