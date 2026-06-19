@@ -1,60 +1,86 @@
 # 🏏 Cricket Bat Toe Detection Using YOLOv8
 
-A computer vision project built using **YOLOv8**, **OpenCV**, and **Streamlit** to detect cricket bats and localize the **toe region** of the bat from images and videos.
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:020617,50:22c55e,100:3b82f6&height=220&section=header&text=Cricket%20Bat%20Toe%20Detection&fontSize=42&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=YOLOv8%20%7C%20OpenCV%20%7C%20Streamlit%20%7C%20Computer%20Vision&descAlignY=60&descAlign=50&descSize=18" />
+</p>
 
-## 🚀 Live Demo
+<p align="center">
+  <a href="https://cricket-bat-toe-detection-using-yolov8-oxpcgapflikgpdy7tt9zva.streamlit.app/">
+    <img src="https://img.shields.io/badge/Live%20Demo-Open%20App-22c55e?style=for-the-badge&logo=streamlit&logoColor=white" />
+  </a>
+  <img src="https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/YOLOv8-Ultralytics-111827?style=for-the-badge&logo=opencv&logoColor=white" />
+  <img src="https://img.shields.io/badge/OpenCV-Computer%20Vision-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white" />
+  <img src="https://img.shields.io/badge/Streamlit-Deployed-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" />
+</p>
 
-🔗 **Try the deployed app here:**
+<p align="center">
+  A computer vision web application that detects <b>cricket bats</b> and localizes the <b>bat toe region</b> from images and videos using YOLOv8.
+</p>
+
+---
+
+## 🚀 Live Project
+
+<p align="center">
+  <a href="https://cricket-bat-toe-detection-using-yolov8-oxpcgapflikgpdy7tt9zva.streamlit.app/">
+    <img src="https://img.shields.io/badge/Click%20Here%20to%20Try%20Live%20App-22c55e?style=for-the-badge&logo=streamlit&logoColor=white" />
+  </a>
+</p>
+
+🔗 **Live App:**
 https://cricket-bat-toe-detection-using-yolov8-oxpcgapflikgpdy7tt9zva.streamlit.app/
 
 ---
 
 ## 📌 Project Overview
 
-This project focuses on detecting two key regions from cricket bat media:
+This project is designed to detect two important regions from cricket bat images and videos:
 
-* **Cricket Bat**
-* **Cricket Bat Toe**
+* 🏏 **Cricket Bat**
+* 🎯 **Cricket Bat Toe**
 
-The application supports both **image detection** and **video detection**. Users can upload an image or video, run YOLOv8 inference, and download the processed output with bounding boxes.
+The application allows users to upload an image or video, run YOLOv8 object detection, view the detected output, and download the final processed result.
 
-The project also includes a smart post-processing fix where, if the model predicts the full bat as a toe region, the largest detected toe box is corrected and treated as the bat.
-
----
-
-## ✨ Features
-
-* Detect cricket bat from images
-* Detect cricket bat toe region
-* Upload and process videos
-* Download processed image output
-* Download processed video output
-* Streamlit-based premium UI
-* YOLOv8 object detection backend
-* OpenCV video frame processing
-* Custom class mapping support
-* Smart post-processing correction
-* Deployed on Streamlit Cloud
-* Model hosted externally using Hugging Face
+It also includes a smart post-processing rule to fix cases where the full bat is mistakenly predicted as the toe region.
 
 ---
 
-## 🛠️ Tech Stack
+## ✨ Key Features
 
-* **Python**
-* **YOLOv8**
-* **Ultralytics**
-* **OpenCV**
-* **Streamlit**
-* **NumPy**
-* **Pandas**
-* **Pillow**
-* **Hugging Face**
-* **Streamlit Cloud**
+* 🖼️ Image detection support
+* 🎥 Video detection support
+* 🏏 Cricket bat localization
+* 🎯 Cricket bat toe region localization
+* 📦 YOLOv8 custom model integration
+* ⚙️ Adjustable confidence threshold
+* 🎚️ Adjustable IOU threshold
+* 🧠 Smart post-processing correction
+* 📥 Download processed image output
+* 📥 Download processed video output
+* 🌐 Streamlit Cloud deployment
+* 🤗 Hugging Face model hosting
+* 🎨 Premium dark UI design
 
 ---
 
-## 📂 Project Structure
+## 🧰 Tech Stack
+
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=python,opencv,github,git,vscode" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/YOLOv8-Ultralytics-111827?style=for-the-badge&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/Streamlit-Web%20App-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" />
+  <img src="https://img.shields.io/badge/Hugging%20Face-Model%20Hosting-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black" />
+  <img src="https://img.shields.io/badge/NumPy-Data%20Processing-013243?style=for-the-badge&logo=numpy&logoColor=white" />
+  <img src="https://img.shields.io/badge/Pandas-DataFrames-150458?style=for-the-badge&logo=pandas&logoColor=white" />
+</p>
+
+---
+
+## 📂 Updated Project Structure
 
 ```text
 Cricket-Bat-Toe-Detection-Using-YOLOv8/
@@ -89,23 +115,31 @@ Cricket-Bat-Toe-Detection-Using-YOLOv8/
     └── detect/
 ```
 
-> Note: The `models/`, `outputs/`, and `runs/` folders are ignored in Git because they can contain large files. The trained model is loaded using a Hugging Face download link during deployment.
+> `models/`, `outputs/`, and `runs/` are ignored in Git because they can contain large model files, generated videos, and prediction outputs.
 
 ---
 
-## 🧠 Model Information
+## 🧠 Model Details
 
-The object detection model was trained using **YOLOv8**.
+The custom detection model was trained using **YOLOv8**.
 
-Current model file:
+Model file:
 
 ```text
 cricket_bat_toe_best.pt
 ```
 
-The model is hosted on Hugging Face and downloaded automatically by the Streamlit app using the `MODEL_URL` environment variable.
+The model is hosted on Hugging Face and downloaded automatically during deployment using the Streamlit secret:
 
-Recommended class mapping:
+```toml
+MODEL_URL = "https://huggingface.co/AdityaKhare123/cricket-bat-toe-detection/resolve/main/cricket_bat_toe_best.pt"
+```
+
+---
+
+## 🏷️ Class Mapping
+
+Current recommended deployed class mapping:
 
 ```text
 2 = Bat
@@ -113,43 +147,51 @@ Recommended class mapping:
 3 = Toe
 ```
 
+The Streamlit sidebar allows changing class mapping if needed.
+
 ---
 
 ## 🎨 Detection Colors
 
-| Object  | Color |
-| ------- | ----- |
-| Bat     | Blue  |
-| Toe     | Green |
-| Unknown | Red   |
+| Object    | Box Color |
+| --------- | --------- |
+| 🏏 Bat    | Blue      |
+| 🎯 Toe    | Green     |
+| ❓ Unknown | Red       |
 
 ---
 
-## ⚙️ How It Works
+## ⚙️ How the App Works
 
-1. User uploads an image or video.
-2. YOLOv8 model runs object detection.
-3. Detected class IDs are mapped to labels.
-4. OpenCV draws bounding boxes and labels.
-5. For videos, each frame is processed one by one.
-6. Smart post-processing corrects cases where the full bat is wrongly detected as toe.
-7. Final output is displayed and can be downloaded.
+```text
+Upload Image/Video
+        ↓
+YOLOv8 Inference
+        ↓
+Class Mapping
+        ↓
+Smart Post-Processing
+        ↓
+OpenCV Bounding Boxes
+        ↓
+Display + Download Output
+```
 
 ---
 
 ## 🧩 Smart Post-Processing Logic
 
-Sometimes the trained model may detect both the full bat and the toe as `Toe`.
+Sometimes the trained model may detect both the full cricket bat and the actual toe region as `Toe`.
 
-To handle this, the project includes a correction rule:
+To improve the final output, this project applies a correction rule:
 
 ```text
-If no Bat is detected,
+If no Bat is detected
 and multiple Toe boxes are detected,
 then the largest Toe box is corrected to Bat.
 ```
 
-This improves the final output visually and makes the detection more practical for demo usage.
+This helps make the output cleaner and more useful for demo and portfolio purposes.
 
 ---
 
@@ -172,15 +214,13 @@ pip install -r requirements.txt
 
 ## ▶️ Run Locally
 
-Start the Streamlit app:
+Run the Streamlit app:
 
 ```bash
 streamlit run app.py
 ```
 
-Then open the local URL shown in the terminal.
-
-Usually:
+Then open:
 
 ```text
 http://localhost:8501
@@ -188,19 +228,7 @@ http://localhost:8501
 
 ---
 
-## 🔐 Environment Variable
-
-For deployment, the model is loaded using a Hugging Face direct download link.
-
-Create a Streamlit secret:
-
-```toml
-MODEL_URL = "https://huggingface.co/AdityaKhare123/cricket-bat-toe-detection/resolve/main/cricket_bat_toe_best.pt"
-```
-
----
-
-## 📋 requirements.txt
+## 📋 Requirements
 
 ```txt
 streamlit
@@ -221,7 +249,7 @@ requests
 
 This project is deployed using **Streamlit Cloud**.
 
-Deployment settings:
+Deployment configuration:
 
 ```text
 Repository: Adityakhare123/Cricket-Bat-Toe-Detection-Using-YOLOv8
@@ -230,7 +258,7 @@ Main file path: app.py
 Python version: 3.11
 ```
 
-Streamlit secrets:
+Streamlit secret:
 
 ```toml
 MODEL_URL = "https://huggingface.co/AdityaKhare123/cricket-bat-toe-detection/resolve/main/cricket_bat_toe_best.pt"
@@ -244,62 +272,72 @@ https://cricket-bat-toe-detection-using-yolov8-oxpcgapflikgpdy7tt9zva.streamlit.
 
 ---
 
-## 🧪 Usage
+## 🖼️ Image Detection Workflow
 
-### Image Detection
-
-1. Open the app.
-2. Go to **Image Detection** tab.
+1. Open the live app.
+2. Go to the **Image Detection** tab.
 3. Upload a `.jpg`, `.jpeg`, or `.png` image.
 4. Click **Run Image Detection**.
 5. View and download the output image.
 
-### Video Detection
+---
 
-1. Go to **Video Detection** tab.
-2. Upload a `.mp4`, `.avi`, `.mov`, or `.mkv` video.
-3. Click **Run Video Detection**.
-4. Wait for processing.
-5. View and download the output video.
+## 🎥 Video Detection Workflow
+
+1. Open the live app.
+2. Go to the **Video Detection** tab.
+3. Upload a `.mp4`, `.avi`, `.mov`, or `.mkv` video.
+4. Click **Run Video Detection**.
+5. Wait for frame-by-frame processing.
+6. View and download the output video.
 
 ---
 
 ## 📌 Current Capability
 
-The current version can:
+The current app can:
 
-* Detect cricket bat region
+* Detect cricket bats
 * Detect cricket bat toe region
 * Process images
 * Process videos
 * Apply custom class mapping
-* Correct common bat/toe misclassification using post-processing
+* Correct common bat/toe misclassification
+* Generate downloadable outputs
 
 ---
 
 ## 🔮 Future Improvements
 
 * Improve dataset quality
-* Retrain model with more toe examples
+* Add more cricket bat images under different lighting
+* Retrain model with cleaner toe annotations
 * Add toe guard detection
 * Add crack and damage detection
 * Add real-time webcam detection
-* Add confidence-based filtering per class
+* Add class-wise confidence filters
 * Improve bat boundary accuracy
-* Add evaluation metrics to the app
-* Add sample demo images to README
+* Add model evaluation dashboard
+* Add sample demo images inside README
 
 ---
 
 ## 👨‍💻 Author
 
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=soft&color=0:020617,100:22c55e&height=120&section=footer&text=Aditya%20Khare&fontSize=36&fontColor=ffffff&animation=fadeIn" />
+</p>
+
 **Aditya Khare**
 
-GitHub:
-https://github.com/Adityakhare123
-
-Live Project:
-https://cricket-bat-toe-detection-using-yolov8-oxpcgapflikgpdy7tt9zva.streamlit.app/
+<p>
+  <a href="https://github.com/Adityakhare123">
+    <img src="https://img.shields.io/badge/GitHub-Adityakhare123-181717?style=for-the-badge&logo=github&logoColor=white" />
+  </a>
+  <a href="https://cricket-bat-toe-detection-using-yolov8-oxpcgapflikgpdy7tt9zva.streamlit.app/">
+    <img src="https://img.shields.io/badge/Live%20Project-Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" />
+  </a>
+</p>
 
 ---
 
@@ -307,8 +345,6 @@ https://cricket-bat-toe-detection-using-yolov8-oxpcgapflikgpdy7tt9zva.streamlit.
 
 If you like this project, consider giving it a ⭐ on GitHub.
 
----
-
-## 📄 License
-
-This project is created for learning, demonstration, and portfolio purposes.
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:3b82f6,50:22c55e,100:020617&height=120&section=footer" />
+</p>
