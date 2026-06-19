@@ -22,14 +22,11 @@ DEFAULT_COLORS = {
 # ============================================================
 # FALLBACK CLASS MAPPING
 # ============================================================
-# Current deployed model behavior:
+# Your deployed model is sometimes predicting the full bat as Toe.
+# So mapping alone is not enough.
 #
-# class 2 = Bat
-# class 1 = Toe
-# class 3 = Toe
-#
-# This fallback only applies if app.py mapping does not already
-# contain the detected class ID.
+# We still keep fallback mapping here, but final correction happens
+# in resolve_detection_labels().
 # ============================================================
 
 FALLBACK_CLASS_NAMES = {
@@ -39,63 +36,12 @@ FALLBACK_CLASS_NAMES = {
 }
 
 
-def draw_label(frame, label, x1, y1, color):
-    """
-    Draw readable label with filled background.
-    """
-
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    font_scale = 0.75
-    thickness = 2
-
-    text_size, _ = cv2.getTextSize(
-        label,
-        font,
-        font_scale,
-        thickness
-    )
-
-    text_w, text_h = text_size
-
-    frame_h, frame_w = frame.shape[:2]
-
-    x1 = max(0, min(int(x1), frame_w - 1))
-    label_y = max(y1 - 10, text_h + 12)
-    label_y = max(text_h + 12, min(label_y, frame_h - 1))
-
-    bg_x1 = x1
-    bg_y1 = max(0, label_y - text_h - 10)
-    bg_x2 = min(frame_w - 1, x1 + text_w + 14)
-    bg_y2 = min(frame_h - 1, label_y + 7)
-
-    # Label background
-    cv2.rectangle(
-        frame,
-        (bg_x1, bg_y1),
-        (bg_x2, bg_y2),
-        color,
-        -1
-    )
-
-    # Label text
-    cv2.putText(
-        frame,
-        label,
-        (x1 + 7, label_y),
-        font,
-        font_scale,
-        (255, 255, 255),
-        thickness,
-        cv2.LINE_AA
-    )
-
-
 def get_class_name(cls_id, class_names):
     """
     Get class name using priority:
 
     1. Class mapping selected in Streamlit app.
-    2. Fallback mapping for deployed model.
+    2. Fallback mapping.
     3. Unknown.
     """
 
@@ -106,6 +52,41 @@ def get_class_name(cls_id, class_names):
         return FALLBACK_CLASS_NAMES[cls_id]
 
     return f"Unknown {cls_id}"
+
+
+def resolve_detection_labels(detections):
+    """
+    Fix wrong model behavior.
+
+    Problem:
+    Model sometimes predicts both:
+    - full bat area as Toe
+    - actual toe area as Toe
+
+    Fix:
+    If no Bat is detected but multiple Toe boxes are detected,
+    promote the largest Toe box to Bat.
+    """
+
+    bat_detections = [
+        d for d in detections
+        if d["class_name"] == "Bat"
+    ]
+
+    toe_detections = [
+        d for d in detections
+        if d["class_name"] == "Toe"
+    ]
+
+    if len(bat_detections) == 0 and len(toe_detections) >= 2:
+        largest_toe = max(
+            toe_detections,
+            key=lambda d: d["area"]
+        )
+
+        largest_toe["class_name"] = "Bat"
+
+    return detections
 
 
 def get_color(class_name):
@@ -122,24 +103,73 @@ def get_color(class_name):
     return DEFAULT_COLORS["Unknown"]
 
 
-def draw_detection(frame, cls_id, confidence, x1, y1, x2, y2, class_names):
+def draw_label(frame, label, x1, y1, color):
     """
-    Draw one detection on a video frame.
+    Draw readable label with filled background.
     """
 
-    class_name = get_class_name(cls_id, class_names)
-    color = get_color(class_name)
-
-    label = f"{class_name} {confidence:.2f}"
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 0.75
+    thickness = 2
 
     frame_h, frame_w = frame.shape[:2]
 
     x1 = max(0, min(int(x1), frame_w - 1))
     y1 = max(0, min(int(y1), frame_h - 1))
-    x2 = max(0, min(int(x2), frame_w - 1))
-    y2 = max(0, min(int(y2), frame_h - 1))
 
-    # Bounding box
+    text_size, _ = cv2.getTextSize(
+        label,
+        font,
+        font_scale,
+        thickness
+    )
+
+    text_w, text_h = text_size
+
+    label_y = max(y1 - 10, text_h + 12)
+    label_y = max(text_h + 12, min(label_y, frame_h - 1))
+
+    bg_x1 = x1
+    bg_y1 = max(0, label_y - text_h - 10)
+    bg_x2 = min(frame_w - 1, x1 + text_w + 14)
+    bg_y2 = min(frame_h - 1, label_y + 7)
+
+    cv2.rectangle(
+        frame,
+        (bg_x1, bg_y1),
+        (bg_x2, bg_y2),
+        color,
+        -1
+    )
+
+    cv2.putText(
+        frame,
+        label,
+        (x1 + 7, label_y),
+        font,
+        font_scale,
+        (255, 255, 255),
+        thickness,
+        cv2.LINE_AA
+    )
+
+
+def draw_detection(frame, detection):
+    """
+    Draw one detection on a video frame.
+    """
+
+    class_name = detection["class_name"]
+    confidence = detection["confidence"]
+
+    x1 = detection["x1"]
+    y1 = detection["y1"]
+    x2 = detection["x2"]
+    y2 = detection["y2"]
+
+    color = get_color(class_name)
+    label = f"{class_name} {confidence:.2f}"
+
     cv2.rectangle(
         frame,
         (x1, y1),
@@ -148,7 +178,6 @@ def draw_detection(frame, cls_id, confidence, x1, y1, x2, y2, class_names):
         4
     )
 
-    # Label
     draw_label(
         frame=frame,
         label=label,
@@ -168,14 +197,6 @@ def process_video(
 ):
     """
     Process input video using YOLOv8 and save annotated output video.
-
-    Args:
-        model_path: Path to trained YOLOv8 model.
-        input_video_path: Uploaded/input video path.
-        output_video_path: Final processed video path.
-        conf: Confidence threshold.
-        iou: IOU threshold.
-        class_names: Class mapping selected from Streamlit UI.
     """
 
     if class_names is None:
@@ -222,6 +243,7 @@ def process_video(
             break
 
         frame_count += 1
+        frame_h, frame_w = frame.shape[:2]
 
         results = model.predict(
             source=frame,
@@ -231,6 +253,7 @@ def process_video(
         )
 
         result = results[0]
+        detections = []
 
         if result.boxes is not None and len(result.boxes) > 0:
             for box in result.boxes:
@@ -239,16 +262,37 @@ def process_video(
 
                 x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
 
-                draw_detection(
-                    frame=frame,
+                x1 = max(0, min(int(x1), frame_w - 1))
+                y1 = max(0, min(int(y1), frame_h - 1))
+                x2 = max(0, min(int(x2), frame_w - 1))
+                y2 = max(0, min(int(y2), frame_h - 1))
+
+                width_box = max(0, x2 - x1)
+                height_box = max(0, y2 - y1)
+                area = width_box * height_box
+
+                class_name = get_class_name(
                     cls_id=cls_id,
-                    confidence=confidence,
-                    x1=x1,
-                    y1=y1,
-                    x2=x2,
-                    y2=y2,
                     class_names=class_names
                 )
+
+                detections.append(
+                    {
+                        "class_id": cls_id,
+                        "class_name": class_name,
+                        "confidence": confidence,
+                        "x1": x1,
+                        "y1": y1,
+                        "x2": x2,
+                        "y2": y2,
+                        "area": area
+                    }
+                )
+
+        detections = resolve_detection_labels(detections)
+
+        for detection in detections:
+            draw_detection(frame, detection)
 
         out.write(frame)
 

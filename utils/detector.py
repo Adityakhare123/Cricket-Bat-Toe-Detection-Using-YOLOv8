@@ -19,35 +19,14 @@ class CricketBatToeDetector:
 
         print("Loaded model names:", self.model.names)
 
-        # =====================================================
-        # DEFAULT FALLBACK CLASS MAPPING
-        # =====================================================
-        # Current deployed model behavior:
-        #
-        # class 2 = Bat
-        # class 1 = Toe
-        # class 3 = Toe
-        #
-        # This fallback is used only if app.py does not pass
-        # class_names or if the selected mapping misses a class.
-        # =====================================================
-
+        # Current deployed fallback behavior
         self.default_class_names = {
             2: "Bat",
             1: "Toe",
             3: "Toe"
         }
 
-        # =====================================================
-        # RGB COLORS
-        # =====================================================
-        # Streamlit displays images in RGB format.
-        #
-        # Bat = Blue
-        # Toe = Green
-        # Unknown = Red
-        # =====================================================
-
+        # RGB colors for Streamlit
         self.class_colors = {
             "Bat": (59, 130, 246),      # Blue
             "Toe": (34, 197, 94),       # Green
@@ -60,11 +39,8 @@ class CricketBatToeDetector:
         class_names: Optional[Dict[int, str]] = None
     ) -> str:
         """
-        Get class name using priority:
-
-        1. Class mapping selected from Streamlit app.
-        2. Default fallback mapping.
-        3. Unknown.
+        Get class name using app-selected mapping first,
+        then fallback mapping.
         """
 
         if class_names and cls_id in class_names:
@@ -74,6 +50,40 @@ class CricketBatToeDetector:
             return self.default_class_names[cls_id]
 
         return f"Unknown {cls_id}"
+
+    def resolve_detection_labels(self, detections: List[Dict]) -> List[Dict]:
+        """
+        Fix wrong model behavior.
+
+        Problem:
+        Model sometimes predicts both:
+        - full bat area as Toe
+        - actual toe area as Toe
+
+        Fix:
+        If no Bat is detected but multiple Toe boxes are detected,
+        promote the largest Toe box to Bat.
+        """
+
+        bat_detections = [
+            d for d in detections
+            if d["class_name"] == "Bat"
+        ]
+
+        toe_detections = [
+            d for d in detections
+            if d["class_name"] == "Toe"
+        ]
+
+        if len(bat_detections) == 0 and len(toe_detections) >= 2:
+            largest_toe = max(
+                toe_detections,
+                key=lambda d: d["area"]
+            )
+
+            largest_toe["class_name"] = "Bat"
+
+        return detections
 
     def get_color(self, class_name: str) -> Tuple[int, int, int]:
         """
@@ -154,16 +164,6 @@ class CricketBatToeDetector:
     ) -> Tuple[np.ndarray, List[Dict]]:
         """
         Run YOLOv8 prediction on uploaded image.
-
-        Args:
-            image: PIL image from Streamlit uploader.
-            conf: Confidence threshold.
-            iou: IOU threshold.
-            class_names: Optional class mapping from Streamlit UI.
-
-        Returns:
-            annotated_image: RGB image with boxes and labels.
-            detections: list of detection details.
         """
 
         image_np = np.array(image)
@@ -182,23 +182,51 @@ class CricketBatToeDetector:
         if result.boxes is None or len(result.boxes) == 0:
             return annotated_image, detections
 
+        image_h, image_w = annotated_image.shape[:2]
+
         for box in result.boxes:
             cls_id = int(box.cls[0].item())
             confidence = float(box.conf[0].item())
 
             x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
 
-            image_h, image_w = annotated_image.shape[:2]
-
             x1 = max(0, min(int(x1), image_w - 1))
             y1 = max(0, min(int(y1), image_h - 1))
             x2 = max(0, min(int(x2), image_w - 1))
             y2 = max(0, min(int(y2), image_h - 1))
 
+            width_box = max(0, x2 - x1)
+            height_box = max(0, y2 - y1)
+            area = width_box * height_box
+
             class_name = self.get_class_name(
                 cls_id=cls_id,
                 class_names=class_names
             )
+
+            detections.append(
+                {
+                    "class_id": cls_id,
+                    "class_name": class_name,
+                    "confidence": round(confidence, 4),
+                    "x1": int(x1),
+                    "y1": int(y1),
+                    "x2": int(x2),
+                    "y2": int(y2),
+                    "area": int(area)
+                }
+            )
+
+        detections = self.resolve_detection_labels(detections)
+
+        for detection in detections:
+            class_name = detection["class_name"]
+            confidence = detection["confidence"]
+
+            x1 = detection["x1"]
+            y1 = detection["y1"]
+            x2 = detection["x2"]
+            y2 = detection["y2"]
 
             color = self.get_color(class_name)
             label = f"{class_name} {confidence:.2f}"
@@ -219,18 +247,6 @@ class CricketBatToeDetector:
                 color=color
             )
 
-            detections.append(
-                {
-                    "class_id": cls_id,
-                    "class_name": class_name,
-                    "confidence": round(confidence, 4),
-                    "x1": int(x1),
-                    "y1": int(y1),
-                    "x2": int(x2),
-                    "y2": int(y2)
-                }
-            )
-
         return annotated_image, detections
 
     def detections_to_dataframe(self, detections: List[Dict]) -> pd.DataFrame:
@@ -247,7 +263,8 @@ class CricketBatToeDetector:
                     "x1",
                     "y1",
                     "x2",
-                    "y2"
+                    "y2",
+                    "area"
                 ]
             )
 
