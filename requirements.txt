@@ -1,10 +1,10 @@
-ultralytics
-opencv-python
 streamlit
-pillow
+ultralytics
+opencv-python-headless
 numpy
 pandas
 matplotlib
-roboflow
+pillow
 torch
 torchvision
+requests

@@ -9,6 +9,7 @@ from PIL import Image
 
 from utils.detector import CricketBatToeDetector
 from utils.video_utils import process_video
+from utils.model_loader import download_model_if_missing
 
 
 # ============================================================
@@ -24,10 +25,17 @@ st.set_page_config(
 
 
 # ============================================================
-# CONSTANTS
+# CONSTANTS + MODEL DOWNLOAD
 # ============================================================
 
-MODEL_PATH = "models/cricket_bat_toe_best.pt"
+LOCAL_MODEL_PATH = "models/cricket_bat_toe_best.pt"
+MODEL_URL = os.getenv("MODEL_URL", "")
+
+MODEL_PATH = download_model_if_missing(
+    model_path=LOCAL_MODEL_PATH,
+    model_url=MODEL_URL
+)
+
 OUTPUT_DIR = Path("outputs")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -345,15 +353,8 @@ st.markdown(
 
 
 # ============================================================
-# MODEL CHECK
+# LOAD DETECTOR
 # ============================================================
-
-if not os.path.exists(MODEL_PATH):
-    st.error(
-        f"Model file not found at `{MODEL_PATH}`. "
-        "Place your trained model inside `models/cricket_bat_toe_best.pt`."
-    )
-    st.stop()
 
 detector = load_detector()
 
