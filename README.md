@@ -20,7 +20,7 @@
 
 ---
 
-## 🚀 Live Project
+##  Live Project
 
 <p align="center">
   <a href="https://cricket-bat-toe-detection-using-yolov8-oxpcgapflikgpdy7tt9zva.streamlit.app/">
@@ -33,12 +33,12 @@ https://cricket-bat-toe-detection-using-yolov8-oxpcgapflikgpdy7tt9zva.streamlit.
 
 ---
 
-## 📌 Project Overview
+##  Project Overview
 
 This project is designed to detect two important regions from cricket bat images and videos:
 
-* 🏏 **Cricket Bat**
-* 🎯 **Cricket Bat Toe**
+*  **Cricket Bat**
+*  **Cricket Bat Toe**
 
 The application allows users to upload an image or video, run YOLOv8 object detection, view the detected output, and download the final processed result.
 
@@ -46,25 +46,25 @@ It also includes a smart post-processing rule to fix cases where the full bat is
 
 ---
 
-## ✨ Key Features
+##  Key Features
 
-* 🖼️ Image detection support
-* 🎥 Video detection support
-* 🏏 Cricket bat localization
-* 🎯 Cricket bat toe region localization
-* 📦 YOLOv8 custom model integration
-* ⚙️ Adjustable confidence threshold
-* 🎚️ Adjustable IOU threshold
-* 🧠 Smart post-processing correction
-* 📥 Download processed image output
-* 📥 Download processed video output
-* 🌐 Streamlit Cloud deployment
-* 🤗 Hugging Face model hosting
-* 🎨 Premium dark UI design
+*  Image detection support
+*  Video detection support
+*  Cricket bat localization
+*  Cricket bat toe region localization
+*  YOLOv8 custom model integration
+*  Adjustable confidence threshold
+*  Adjustable IOU threshold
+*  Smart post-processing correction
+*  Download processed image output
+*  Download processed video output
+*  Streamlit Cloud deployment
+*  Hugging Face model hosting
+*  Premium dark UI design
 
 ---
 
-## 🧰 Tech Stack
+##  Tech Stack
 
 <p align="center">
   <img src="https://skillicons.dev/icons?i=python,opencv,github,git,vscode" />
@@ -80,7 +80,7 @@ It also includes a smart post-processing rule to fix cases where the full bat is
 
 ---
 
-## 📂 Updated Project Structure
+##  Updated Project Structure
 
 ```text
 Cricket-Bat-Toe-Detection-Using-YOLOv8/
@@ -119,7 +119,7 @@ Cricket-Bat-Toe-Detection-Using-YOLOv8/
 
 ---
 
-## 🧠 Model Details
+##  Model Details
 
 The custom detection model was trained using **YOLOv8**.
 
@@ -137,7 +137,7 @@ MODEL_URL = "https://huggingface.co/AdityaKhare123/cricket-bat-toe-detection/res
 
 ---
 
-## 🏷️ Class Mapping
+##  Class Mapping
 
 Current recommended deployed class mapping:
 
@@ -151,17 +151,17 @@ The Streamlit sidebar allows changing class mapping if needed.
 
 ---
 
-## 🎨 Detection Colors
+##  Detection Colors
 
-| Object    | Box Color |
-| --------- | --------- |
-| 🏏 Bat    | Blue      |
-| 🎯 Toe    | Green     |
-| ❓ Unknown | Red       |
+| Object   | Box Color |
+| -------- | --------- |
+|  Bat     | Blue      |
+|  Toe     | Green     |
+|  Unknown | Red       |
 
 ---
 
-## ⚙️ How the App Works
+##  How the App Works
 
 ```text
 Upload Image/Video
@@ -179,7 +179,7 @@ Display + Download Output
 
 ---
 
-## 🧩 Smart Post-Processing Logic
+##  Smart Post-Processing Logic
 
 Sometimes the trained model may detect both the full cricket bat and the actual toe region as `Toe`.
 
@@ -195,7 +195,7 @@ This helps make the output cleaner and more useful for demo and portfolio purpos
 
 ---
 
-## 📦 Installation
+##  Installation
 
 Clone the repository:
 
@@ -212,7 +212,7 @@ pip install -r requirements.txt
 
 ---
 
-## ▶️ Run Locally
+##  Run Locally
 
 Run the Streamlit app:
 
@@ -228,7 +228,7 @@ http://localhost:8501
 
 ---
 
-## 📋 Requirements
+##  Requirements
 
 ```txt
 streamlit
@@ -245,7 +245,7 @@ requests
 
 ---
 
-## 🚀 Deployment
+##  Deployment
 
 This project is deployed using **Streamlit Cloud**.
 
@@ -272,7 +272,7 @@ https://cricket-bat-toe-detection-using-yolov8-oxpcgapflikgpdy7tt9zva.streamlit.
 
 ---
 
-## 🖼️ Image Detection Workflow
+##  Image Detection Workflow
 
 1. Open the live app.
 2. Go to the **Image Detection** tab.
@@ -293,7 +293,7 @@ https://cricket-bat-toe-detection-using-yolov8-oxpcgapflikgpdy7tt9zva.streamlit.
 
 ---
 
-## 📌 Current Capability
+##  Current Capability
 
 The current app can:
 
@@ -322,7 +322,7 @@ The current app can:
 
 ---
 
-## 👨‍💻 Author
+##  Author
 
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=soft&color=0:020617,100:22c55e&height=120&section=footer&text=Aditya%20Khare&fontSize=36&fontColor=ffffff&animation=fadeIn" />
@@ -341,9 +341,9 @@ The current app can:
 
 ---
 
-## ⭐ Support
+##  Support
 
-If you like this project, consider giving it a ⭐ on GitHub.
+If you like this project, consider giving it a on GitHub.
 
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=0:3b82f6,50:22c55e,100:020617&height=120&section=footer" />
