@@ -1,8 +1,10 @@
 ultralytics
 opencv-python
+streamlit
+pillow
 numpy
-matplotlib
 pandas
+matplotlib
 roboflow
 torch
 torchvision

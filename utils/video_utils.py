@@ -1,0 +1,257 @@
+import cv2
+from ultralytics import YOLO
+
+
+# ============================================================
+# DEFAULT COLORS
+# ============================================================
+# OpenCV uses BGR format
+#
+# Bat = Blue
+# Toe = Green
+# Unknown = Red
+# ============================================================
+
+DEFAULT_COLORS = {
+    "Bat": (255, 0, 0),       # Blue
+    "Toe": (0, 255, 0),       # Green
+    "Unknown": (0, 0, 255)    # Red
+}
+
+
+# ============================================================
+# FALLBACK CLASS MAPPING
+# ============================================================
+# This fallback does NOT override app.py mapping.
+# It only fixes classes that are still coming as Unknown.
+#
+# Current observed issue:
+# class 2 / class 3 are toe-like detections.
+# ============================================================
+
+FALLBACK_CLASS_NAMES = {
+    2: "Toe",
+    3: "Toe"
+}
+
+
+def draw_label(frame, label, x1, y1, color):
+    """
+    Draw readable label with filled background.
+    """
+
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 0.75
+    thickness = 2
+
+    text_size, _ = cv2.getTextSize(
+        label,
+        font,
+        font_scale,
+        thickness
+    )
+
+    text_w, text_h = text_size
+    label_y = max(y1 - 10, text_h + 12)
+
+    # Keep label inside frame width
+    frame_h, frame_w = frame.shape[:2]
+    x1 = max(0, min(x1, frame_w - 1))
+    label_y = max(text_h + 12, min(label_y, frame_h - 1))
+
+    bg_x1 = x1
+    bg_y1 = max(0, label_y - text_h - 10)
+    bg_x2 = min(frame_w - 1, x1 + text_w + 14)
+    bg_y2 = min(frame_h - 1, label_y + 7)
+
+    # Label background
+    cv2.rectangle(
+        frame,
+        (bg_x1, bg_y1),
+        (bg_x2, bg_y2),
+        color,
+        -1
+    )
+
+    # Label text
+    cv2.putText(
+        frame,
+        label,
+        (x1 + 7, label_y),
+        font,
+        font_scale,
+        (255, 255, 255),
+        thickness,
+        cv2.LINE_AA
+    )
+
+
+def get_class_name(cls_id, class_names):
+    """
+    Get class name using priority:
+
+    1. Class mapping selected in Streamlit app.
+    2. Fallback mapping for known extra toe class IDs.
+    3. Unknown.
+    """
+
+    if class_names and cls_id in class_names:
+        return class_names[cls_id]
+
+    if cls_id in FALLBACK_CLASS_NAMES:
+        return FALLBACK_CLASS_NAMES[cls_id]
+
+    return f"Unknown {cls_id}"
+
+
+def get_color(class_name):
+    """
+    Get bounding box color by class name.
+    """
+
+    if class_name == "Bat":
+        return DEFAULT_COLORS["Bat"]
+
+    if class_name == "Toe":
+        return DEFAULT_COLORS["Toe"]
+
+    return DEFAULT_COLORS["Unknown"]
+
+
+def draw_detection(frame, cls_id, confidence, x1, y1, x2, y2, class_names):
+    """
+    Draw one detection on a video frame.
+    """
+
+    class_name = get_class_name(cls_id, class_names)
+    color = get_color(class_name)
+
+    label = f"{class_name} {confidence:.2f}"
+
+    frame_h, frame_w = frame.shape[:2]
+
+    x1 = max(0, min(int(x1), frame_w - 1))
+    y1 = max(0, min(int(y1), frame_h - 1))
+    x2 = max(0, min(int(x2), frame_w - 1))
+    y2 = max(0, min(int(y2), frame_h - 1))
+
+    # Bounding box
+    cv2.rectangle(
+        frame,
+        (x1, y1),
+        (x2, y2),
+        color,
+        4
+    )
+
+    # Label
+    draw_label(
+        frame=frame,
+        label=label,
+        x1=x1,
+        y1=y1,
+        color=color
+    )
+
+
+def process_video(
+    model_path: str,
+    input_video_path: str,
+    output_video_path: str,
+    conf: float = 0.25,
+    iou: float = 0.45,
+    class_names=None
+):
+    """
+    Process input video using YOLOv8 and save annotated output video.
+
+    Args:
+        model_path: Path to trained YOLOv8 model.
+        input_video_path: Uploaded/input video path.
+        output_video_path: Final processed video path.
+        conf: Confidence threshold.
+        iou: IOU threshold.
+        class_names: Class mapping selected from Streamlit UI.
+    """
+
+    if class_names is None:
+        class_names = {}
+
+    model = YOLO(model_path)
+
+    print("Loaded model names:", model.names)
+    print("Using app class names:", class_names)
+    print("Using fallback class names:", FALLBACK_CLASS_NAMES)
+
+    cap = cv2.VideoCapture(input_video_path)
+
+    if not cap.isOpened():
+        raise ValueError(f"Could not open video: {input_video_path}")
+
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    if fps is None or fps <= 0:
+        fps = 25
+
+    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+
+    out = cv2.VideoWriter(
+        output_video_path,
+        fourcc,
+        fps,
+        (width, height)
+    )
+
+    if not out.isOpened():
+        cap.release()
+        raise ValueError(f"Could not create output video: {output_video_path}")
+
+    frame_count = 0
+
+    while True:
+        ret, frame = cap.read()
+
+        if not ret:
+            break
+
+        frame_count += 1
+
+        results = model.predict(
+            source=frame,
+            conf=conf,
+            iou=iou,
+            verbose=False
+        )
+
+        result = results[0]
+
+        if result.boxes is not None and len(result.boxes) > 0:
+            for box in result.boxes:
+                cls_id = int(box.cls[0].item())
+                confidence = float(box.conf[0].item())
+
+                x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
+
+                draw_detection(
+                    frame=frame,
+                    cls_id=cls_id,
+                    confidence=confidence,
+                    x1=x1,
+                    y1=y1,
+                    x2=x2,
+                    y2=y2,
+                    class_names=class_names
+                )
+
+        out.write(frame)
+
+        if frame_count % 50 == 0:
+            print(f"Processed {frame_count}/{total_frames} frames")
+
+    cap.release()
+    out.release()
+
+    print(f"Video saved successfully at: {output_video_path}")
