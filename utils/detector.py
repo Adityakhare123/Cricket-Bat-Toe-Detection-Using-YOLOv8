@@ -19,15 +19,35 @@ class CricketBatToeDetector:
 
         print("Loaded model names:", self.model.names)
 
-        # Default fallback mapping
-        # This will be used only if app.py does not pass class_names
+        # =====================================================
+        # DEFAULT FALLBACK CLASS MAPPING
+        # =====================================================
+        # Current deployed model behavior:
+        #
+        # class 2 = Bat
+        # class 1 = Toe
+        # class 3 = Toe
+        #
+        # This fallback is used only if app.py does not pass
+        # class_names or if the selected mapping misses a class.
+        # =====================================================
+
         self.default_class_names = {
-            1: "Bat",
-            2: "Toe",
+            2: "Bat",
+            1: "Toe",
             3: "Toe"
         }
 
-        # RGB colors because Streamlit uses RGB image display
+        # =====================================================
+        # RGB COLORS
+        # =====================================================
+        # Streamlit displays images in RGB format.
+        #
+        # Bat = Blue
+        # Toe = Green
+        # Unknown = Red
+        # =====================================================
+
         self.class_colors = {
             "Bat": (59, 130, 246),      # Blue
             "Toe": (34, 197, 94),       # Green
@@ -40,8 +60,11 @@ class CricketBatToeDetector:
         class_names: Optional[Dict[int, str]] = None
     ) -> str:
         """
-        Get class name using app-selected mapping first,
-        then fallback mapping.
+        Get class name using priority:
+
+        1. Class mapping selected from Streamlit app.
+        2. Default fallback mapping.
+        3. Unknown.
         """
 
         if class_names and cls_id in class_names:
@@ -81,6 +104,11 @@ class CricketBatToeDetector:
         font_scale = 0.75
         thickness = 2
 
+        image_h, image_w = image.shape[:2]
+
+        x1 = max(0, min(int(x1), image_w - 1))
+        y1 = max(0, min(int(y1), image_h - 1))
+
         text_size, _ = cv2.getTextSize(
             label,
             font,
@@ -89,12 +117,19 @@ class CricketBatToeDetector:
         )
 
         text_w, text_h = text_size
+
         label_y = max(y1 - 10, text_h + 12)
+        label_y = max(text_h + 12, min(label_y, image_h - 1))
+
+        bg_x1 = x1
+        bg_y1 = max(0, label_y - text_h - 10)
+        bg_x2 = min(image_w - 1, x1 + text_w + 14)
+        bg_y2 = min(image_h - 1, label_y + 7)
 
         cv2.rectangle(
             image,
-            (x1, label_y - text_h - 10),
-            (x1 + text_w + 14, label_y + 7),
+            (bg_x1, bg_y1),
+            (bg_x2, bg_y2),
             color,
             -1
         )
@@ -153,13 +188,19 @@ class CricketBatToeDetector:
 
             x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
 
+            image_h, image_w = annotated_image.shape[:2]
+
+            x1 = max(0, min(int(x1), image_w - 1))
+            y1 = max(0, min(int(y1), image_h - 1))
+            x2 = max(0, min(int(x2), image_w - 1))
+            y2 = max(0, min(int(y2), image_h - 1))
+
             class_name = self.get_class_name(
                 cls_id=cls_id,
                 class_names=class_names
             )
 
             color = self.get_color(class_name)
-
             label = f"{class_name} {confidence:.2f}"
 
             cv2.rectangle(

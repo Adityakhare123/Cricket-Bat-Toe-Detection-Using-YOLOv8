@@ -22,15 +22,19 @@ DEFAULT_COLORS = {
 # ============================================================
 # FALLBACK CLASS MAPPING
 # ============================================================
-# This fallback does NOT override app.py mapping.
-# It only fixes classes that are still coming as Unknown.
+# Current deployed model behavior:
 #
-# Current observed issue:
-# class 2 / class 3 are toe-like detections.
+# class 2 = Bat
+# class 1 = Toe
+# class 3 = Toe
+#
+# This fallback only applies if app.py mapping does not already
+# contain the detected class ID.
 # ============================================================
 
 FALLBACK_CLASS_NAMES = {
-    2: "Toe",
+    2: "Bat",
+    1: "Toe",
     3: "Toe"
 }
 
@@ -52,11 +56,11 @@ def draw_label(frame, label, x1, y1, color):
     )
 
     text_w, text_h = text_size
-    label_y = max(y1 - 10, text_h + 12)
 
-    # Keep label inside frame width
     frame_h, frame_w = frame.shape[:2]
-    x1 = max(0, min(x1, frame_w - 1))
+
+    x1 = max(0, min(int(x1), frame_w - 1))
+    label_y = max(y1 - 10, text_h + 12)
     label_y = max(text_h + 12, min(label_y, frame_h - 1))
 
     bg_x1 = x1
@@ -91,7 +95,7 @@ def get_class_name(cls_id, class_names):
     Get class name using priority:
 
     1. Class mapping selected in Streamlit app.
-    2. Fallback mapping for known extra toe class IDs.
+    2. Fallback mapping for deployed model.
     3. Unknown.
     """
 
