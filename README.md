@@ -282,7 +282,7 @@ https://cricket-bat-toe-detection-using-yolov8-oxpcgapflikgpdy7tt9zva.streamlit.
 
 ---
 
-## 🎥 Video Detection Workflow
+##  Video Detection Workflow
 
 1. Open the live app.
 2. Go to the **Video Detection** tab.
@@ -307,7 +307,7 @@ The current app can:
 
 ---
 
-## 🔮 Future Improvements
+##  Future Improvements
 
 * Improve dataset quality
 * Add more cricket bat images under different lighting
