@@ -28,7 +28,7 @@
   </a>
 </p>
 
-🔗 **Live App:**
+ **Live App:**
 https://cricket-bat-toe-detection-using-yolov8-oxpcgapflikgpdy7tt9zva.streamlit.app/
 
 ---
