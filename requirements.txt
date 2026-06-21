@@ -1,10 +1,9 @@
-streamlit
-ultralytics
-opencv-python-headless
-numpy
-pandas
-matplotlib
-pillow
+streamlit==1.36.0
+ultralytics==8.2.70
+opencv-python-headless==4.10.0.84
+numpy==1.26.4
+pandas==2.2.2
+pillow==10.4.0
+requests==2.32.3
 torch
 torchvision
-requests
